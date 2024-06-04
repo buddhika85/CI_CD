@@ -11,6 +11,8 @@ builder.Services.AddSwaggerGen();
 
 // DB connection string
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("ToDos"));
+builder.Services.AddScoped<AppDbContext>();
+builder.Services.AddScoped<IToDosRepository, ToDosRepository>();
 
 var app = builder.Build();
 
@@ -59,7 +61,7 @@ app.MapPut("api/v1/todo/{id}", async (IToDosRepository repo, int id, ToDoItem to
 });
 
 // delete
-app.MapDelete("api/v1/todo", async (IToDosRepository repo, int id) => {
+app.MapDelete("api/v1/todo/{id}", async (IToDosRepository repo, int id) => {
     var toDoToDelete = await repo.GetById(id);
     if (toDoToDelete == null)
         return Results.NotFound($"No such todo with {id}");
